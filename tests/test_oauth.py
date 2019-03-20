@@ -39,15 +39,13 @@ from oauth1.signer import OAuthSigner
 class OAuthTest(unittest.TestCase):
 
     keyFile = join(dirname(dirname(realpath(__file__))),"tests","fake-key.p12")
-    key_object = SecurityUtil.load_signing_key(keyFile, "fakepassword")
-    auth_signer = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", key_object)
-
-
+    signing_key = SecurityUtil.load_signing_key(keyFile, "fakepassword")
+    consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
 
     def test_get_authorization_header(self):
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
-        header = OAuth.get_authorization_header(self, uri, method, "payload", self.key_object, self.auth_signer)
+        header = OAuth.get_authorization_header(self, uri, method, "payload", self.consumer_key, self.signing_key)
 
 
 
@@ -69,7 +67,7 @@ class OAuthTest(unittest.TestCase):
 
         baseString = 'POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3DWhqqH%252BTU95VgZMItpdq78BWb4cE%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_signature_method%3DRSA-SHA1%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0'
 
-        signature = OAuth.sign_message(self.auth_signer, baseString, self.key_object)
+        signature = OAuth.sign_message(self, baseString, self.signing_key)
 
         signature = Util.uri_rfc3986_encode(signature)
 

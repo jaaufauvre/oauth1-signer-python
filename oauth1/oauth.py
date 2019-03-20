@@ -52,7 +52,7 @@ class OAuth():
         base_string = OAuth.get_base_string(uri, method, oauth_parameters, oauth_parameters.get_base_parameters_dict())
 
         # Sign the base string using the private key
-        signature = OAuth.sign_message(signing_key, base_string, consumer_key)
+        signature = OAuth.sign_message(self, base_string, signing_key)
 
         # Set the signature in the Base parameters
         oauth_parameters.set_oauth_signature(signature)
