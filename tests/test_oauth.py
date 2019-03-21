@@ -29,7 +29,7 @@
 #
 import unittest
 from oauth1.oauth import OAuth
-import oauth1.securityutils as SecurityUtil
+import oauth1.authenticationutils as authenticationutils
 import oauth1.coreutils as Util
 from os.path import dirname, realpath, join
 
@@ -39,7 +39,7 @@ from oauth1.signer import OAuthSigner
 class OAuthTest(unittest.TestCase):
 
     keyFile = join(dirname(dirname(realpath(__file__))),"tests","fake-key.p12")
-    signing_key = SecurityUtil.load_signing_key(keyFile, "fakepassword")
+    signing_key = authenticationutils.load_signing_key(keyFile, "fakepassword")
     consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
 
     def test_get_authorization_header(self):
@@ -56,12 +56,6 @@ class OAuthTest(unittest.TestCase):
     def test_get_timestamp(self):
         timestamp = OAuth.get_timestamp()
         self.assertEqual(len(str(timestamp)),10)
-
-    def test_get_bodyhash(self):
-        body = '<?xml version="1.0" encoding="Windows-1252"?><ns2:TerminationInquiryRequest xmlns:ns2="http://mastercard.com/termination"><AcquirerId>1996</AcquirerId><TransactionReferenceNumber>1</TransactionReferenceNumber><Merchant><Name>TEST</Name><DoingBusinessAsName>TEST</DoingBusinessAsName><PhoneNumber>5555555555</PhoneNumber><NationalTaxId>1234567890</NationalTaxId><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><Principal><FirstName>John</FirstName><LastName>Smith</LastName><NationalId>1234567890</NationalId><PhoneNumber>5555555555</PhoneNumber><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><DriversLicense><Number>1234567890</Number><CountrySubdivision>XX</CountrySubdivision></DriversLicense></Principal></Merchant></ns2:TerminationInquiryRequest>'
-        encodedHash = Util.base64_encode(Util.sha1_encode(body))
-        self.assertEqual( encodedHash, str("WhqqH+TU95VgZMItpdq78BWb4cE="))
-
 
     def test_sign_message(self):
 

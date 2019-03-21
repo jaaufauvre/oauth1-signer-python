@@ -27,18 +27,13 @@
 # SUCH DAMAGE.
 #
 """
-Utility file having common functions for MasterCard Core SDK
+Utility file having common functions
 """
 
 import hashlib
 import base64
 
-
-try:
-    from urllib.parse import urlparse, parse_qsl  # Python 2.x
-    from urllib.parse import quote, quote_plus
-except ImportError:  # Python 3
-    from urllib.parse import urlparse, quote, quote_plus, parse_qsl
+from urllib.parse import urlparse, quote, quote_plus, parse_qsl
 
 
 def validate_url(url):
@@ -102,13 +97,6 @@ def uri_rfc3986_encode(value):
     return encoded
 
 
-def sha1_encode(text):
-    """
-    Returns the digest of SHA-1 of the text
-    """
-    return hashlib.sha1(str(text).encode('utf-8')).digest()
-
-
 def sha256_encode(text):
     """
     Returns the digest of SHA-1 of the text
@@ -126,38 +114,3 @@ def base64_encode(text):
         return encode.decode('ascii')
     else:
         return encode
-
-
-def sub_map(input_map, key_list):
-    """
-    Returns a dict containing key, value from input_map for keys in key_list
-    Matched keys are removed from input_map
-    """
-    sub_map = {}
-    for key in key_list:
-        if key in input_map:
-            sub_map[key] = input_map[key]
-            del input_map[key]
-    return sub_map
-
-
-def get_replaced_path(path, input_map):
-    """
-    Replaces the {var} variables in path with value from input_map
-    The replaced values are removed from inputPath
-
-    >>> get_replaced_path("http://localhost:8080/{var1}/car",{"var1" => 1})
-        "http://localhost:8080/1/car"
-
-    """
-    path_regex = re.compile("{(.*?)}")
-    matches = path_regex.findall(path)
-
-    for match in matches:
-        try:
-            path = path.replace("{" + match +"}", str(input_map[match]))
-            del input_map[match]
-        except KeyError as k:
-            raise KeyError("path parameter: "+match+" expected but not found in input map")
-
-    return path
