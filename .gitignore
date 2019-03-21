@@ -104,5 +104,4 @@ venv.bak/
 .mypy_cache/
 
 *.iml
-**/__init__.py
 .idea
