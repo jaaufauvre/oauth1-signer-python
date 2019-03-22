@@ -11,6 +11,8 @@
   * [Adding the Library to Your Project](#adding-the-library-to-your-project)
   * [Loading the Signing Key](#loading-the-signing-key) 
   * [Creating the OAuth Authorization Header](#creating-the-oauth-authorization-header)
+  * [Complete Example](#complete-example)
+
 
 ## Overview <a name="overview"></a>
 Zero dependency library for generating a Mastercard API compliant OAuth signature.
@@ -33,7 +35,7 @@ As part of this set up, you'll receive credentials for your app:
 ### Adding the Library to Your Project <a name="adding-the-library-to-your-project"></a>
 
 #### PIP
-`pip install git+https://github.com/Mastercard/oauth1-signer-python.git`
+`pip3 install git+https://github.com/Mastercard/oauth1-signer-python.git`
 
 ####or Clone 
 `git clone https://github.com/Mastercard/oauth1-signer-python.git`
@@ -63,3 +65,26 @@ The method that does all the heavy lifting is `OAuth.getAuthorizationHeader`. Yo
         header = OAuth.get_authorization_header(self, uri, method, "payload", self.consumer_key, self.signing_key)
 ```
 
+### Complete Example <a name="complete-example"></a>
+The following is a complete example that can be used to test an installation.
+```python
+import unittest
+from oauth1.oauth import OAuth
+import oauth1.authenticationutils as authenticationutils
+from os.path import dirname, realpath, join
+from oauth1.signer import OAuthSigner
+
+
+class OAuthReadmeTest(unittest.TestCase):
+
+
+    def test_from_readme(self):
+        uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
+        method = "POST"
+
+        keyFile = join(dirname(dirname(realpath(__file__))),"tests","fake-key.p12")
+        signing_key = authenticationutils.load_signing_key(keyFile, "fakepassword")
+        consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
+
+        header = OAuth.get_authorization_header(self, uri, method, "payload", consumer_key, signing_key)
+```
