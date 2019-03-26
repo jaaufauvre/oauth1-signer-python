@@ -71,7 +71,7 @@ class OAuthReadmeTest(unittest.TestCase):
 ```
 #### Breakdown of the sample <a name="sample-breakdown"></a>
 
-#####Loading the Signing Key <a name="loading-the-signing-key"></a>
+##### Loading the Signing Key <a name="loading-the-signing-key"></a>
 
 A `PrivateKey` key object can be created by calling the `AuthenticationUtils.loadSigningKey` method:
 ```python
