@@ -70,6 +70,7 @@ class OAuthReadmeTest(unittest.TestCase):
         header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
 ```
 #### Breakdown of the sample <a name="sample-breakdown"></a>
+
 #####Loading the Signing Key <a name="loading-the-signing-key"></a>
 
 A `PrivateKey` key object can be created by calling the `AuthenticationUtils.loadSigningKey` method:
@@ -83,8 +84,8 @@ A `PrivateKey` key object can be created by calling the `AuthenticationUtils.loa
 The method that does all the heavy lifting is `OAuth.getAuthorizationHeader`. You can call into it directly, and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
 
 ```python
-        uri = "https://sandbox.api.mastercard.com/service"
-        method = "POST"
-        header = OAuth().get_authorization_header(uri, method, "payload", self.consumer_key, self.signing_key)
+    uri = "https://sandbox.api.mastercard.com/service"
+    method = "POST"
+    header = OAuth().get_authorization_header(uri, method, "payload", self.consumer_key, self.signing_key)
 ```
 
