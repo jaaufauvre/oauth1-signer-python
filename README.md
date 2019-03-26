@@ -9,9 +9,11 @@
 - [Usage](#usage)
   * [Prerequisites](#prerequisites)
   * [Adding the Library to Your Project](#adding-the-library-to-your-project)
-  * [Loading the Signing Key](#loading-the-signing-key) 
-  * [Creating the OAuth Authorization Header](#creating-the-oauth-authorization-header)
-  * [Complete Example](#complete-example)
+  * [Sample Code](#sample-code)
+    * [Breakdown of the Sample](#sample-breakdown)
+      * [Loading the Signing Key](#loading-the-signing-key)
+      * [Creating the OAuth Authorization](#creating-the-oauth-authorization-header)
+
 
 
 ## Overview <a name="overview"></a>
@@ -45,28 +47,8 @@ Change to the repo folder, and enter :
 `python3 setup.py install`
 
 
-
-### Loading the Signing Key <a name="loading-the-signing-key"></a>
-
-A `PrivateKey` key object can be created by calling the `AuthenticationUtils.loadSigningKey` method:
-```python
-    keyfile = join(dirname(dirname(realpath(__file__))), "folder", "keyfile.p12")
-    signing_key = authenticationutils.load_signing_key(keyfile, "password")
-    consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
-
-```
-
-### Creating the OAuth Authorization Header <a name="creating-the-oauth-authorization-header"></a>
-The method that does all the heavy lifting is `OAuth.getAuthorizationHeader`. You can call into it directly and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
-
-```python
-        uri = "https://sandbox.api.mastercard.com/service"
-        method = "POST"
-        header = OAuth.get_authorization_header(self, uri, method, "payload", self.consumer_key, self.signing_key)
-```
-
-### Complete Example <a name="complete-example"></a>
-The following is a complete example that can be used to test an installation.
+### Sample Code <a name="sample-code"></a>
+The following sample, when used in conjunction with the p12 file in the current directory, shows how the package can be used :
 ```python
 import unittest
 from oauth1.oauth import OAuth
@@ -82,9 +64,27 @@ class OAuthReadmeTest(unittest.TestCase):
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
 
-        keyFile = join(dirname(dirname(realpath(__file__))),"tests","fake-key.p12")
-        signing_key = authenticationutils.load_signing_key(keyFile, "fakepassword")
+        signing_key = authenticationutils.load_signing_key("./fake-key.p12", "fakepassword")
         consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
 
-        header = OAuth.get_authorization_header(self, uri, method, "payload", consumer_key, signing_key)
+        header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
 ```
+#### Breakdown of the sample <a name="sample-breakdown"></a>
+#####Loading the Signing Key <a name="loading-the-signing-key"></a>
+
+A `PrivateKey` key object can be created by calling the `AuthenticationUtils.loadSigningKey` method:
+```python
+    signing_key = authenticationutils.load_signing_key("./fake-key.p12", "fakepassword")
+    consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
+
+```
+
+##### Creating the OAuth Authorization Header <a name="creating-the-oauth-authorization-header"></a>
+The method that does all the heavy lifting is `OAuth.getAuthorizationHeader`. You can call into it directly, and as long as you provide the correct parameters, it will return a string that you can add into your request's `Authorization` header.
+
+```python
+        uri = "https://sandbox.api.mastercard.com/service"
+        method = "POST"
+        header = OAuth().get_authorization_header(uri, method, "payload", self.consumer_key, self.signing_key)
+```
+

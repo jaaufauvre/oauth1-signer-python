@@ -41,11 +41,10 @@ class OAuthReadmeTest(unittest.TestCase):
         uri = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0"
         method = "POST"
 
-        keyFile = join(dirname(dirname(realpath(__file__))),"tests","fake-key.p12")
-        signing_key = authenticationutils.load_signing_key(keyFile, "fakepassword")
+        signing_key = authenticationutils.load_signing_key("./fake-key.p12", "fakepassword")
         consumer_key = OAuthSigner("uLXKmWNmIkzIGKfA2injnNQqpZaxaBSKxa3ixEVu2f283c95!33b9b2bd960147e387fa6f3f238f07170000000000000000", signing_key)
 
-        header = OAuth.get_authorization_header(self, uri, method, "payload", consumer_key, signing_key)
+        header = OAuth().get_authorization_header(uri, method, "payload", consumer_key, signing_key)
 
 
 
