@@ -17,7 +17,8 @@
 
 
 ## Overview <a name="overview"></a>
-Zero dependency library for generating a Mastercard API compliant OAuth signature.
+This is an alpha version of the Pyhon library for generating a Mastercard API compliant OAuth signature.
+As such it is a work-in-progress, and unsupported. This warning will be removed when the bundle is finalised.
 
 ### Compatibility <a name="compatibility"></a>
 Python 3.7.x
