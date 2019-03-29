@@ -18,7 +18,7 @@
 
 ## Overview <a name="overview"></a>
 This is an alpha version of the Pyhon library for generating a Mastercard API compliant OAuth signature.
-As such it is a work-in-progress, and unsupported. This warning will be removed when the bundle is finalised.
+As such it is a work-in-progress, not for commercial use, and unsupported. This warning will be removed when the bundle is finalised.
 
 ### Compatibility <a name="compatibility"></a>
 Python 3.7.x
