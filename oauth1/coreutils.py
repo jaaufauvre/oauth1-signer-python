@@ -83,7 +83,22 @@ def normalize_url(url):
     Removes the query parameters from the URL
     """
     parse = urlparse(url)
-    return "{}://{}{}".format(parse.scheme, parse.netloc, parse.path)
+
+    # netloc should be lowercase
+    netloc = parse.netloc.lower()
+    if parse.scheme=="http":
+        if netloc.endswith(":80"):
+            netloc = netloc[:-3]
+
+    elif parse.scheme=="https":
+        if netloc.endswith(":443"):
+            netloc = netloc[:-4]
+
+    # add a '/' at the end of the netloc if there in no path
+    if not parse.path:
+        netloc = netloc+"/"
+
+    return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
 
 def uri_rfc3986_encode(value):
@@ -91,9 +106,11 @@ def uri_rfc3986_encode(value):
     RFC 3986 encodes the value
     """
     encoded = quote_plus(value)
-    encoded = str.replace(encoded, '+', '%20')
+    # encoded = str.replace(encoded, ' ', '%20')
+    encoded = str.replace(encoded, ':', '%3A')
+    encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
-    encoded = str.replace(encoded, '~', '%7E')
+    # encoded = str.replace(encoded, '~', '%7E')
     return encoded
 
 

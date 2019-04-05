@@ -31,12 +31,29 @@ import time
 
 import oauth1.coreutils as util
 from OpenSSL import crypto
-
+from urllib import parse
 
 class OAuth():
+    EMPTY_STRING = ""
+
 
     def get_authorization_header(self, uri, method, payload, consumer_key, signing_key):
 
+        query_params = OAuth.get_query_params(uri)
+
+        oauth_parameters = OAuth.get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key)
+
+        # Get the updated base parameteres dict
+        oauth_base_parameters_dict = oauth_parameters.get_base_parameters_dict()
+
+        # Generate the header value for OAuth Header
+        oauth_key = OAuthParameters.OAUTH_KEY+" "+ \
+                    ",".join([util.uri_rfc3986_encode(str(key)) + "=\"" +
+                              util.uri_rfc3986_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
+        return oauth_key
+
+
+    def get_oauth_parameters(self, uri, method, payload, consumer_key, signing_key):
         # Get all the base parameters such as nonce and timestamp
         oauth_parameters = OAuthParameters()
         oauth_parameters.set_oauth_consumer_key(consumer_key)
@@ -57,14 +74,8 @@ class OAuth():
         # Set the signature in the Base parameters
         oauth_parameters.set_oauth_signature(signature)
 
-        # Get the updated base parameteres dict
-        oauth_base_parameters_dict = oauth_parameters.get_base_parameters_dict()
+        return oauth_parameters
 
-        # Generate the header value for OAuth Header
-        oauth_key = OAuthParameters.OAUTH_KEY+" "+ \
-                    ",".join([util.uri_rfc3986_encode(str(key)) + "=\"" +
-                              util.uri_rfc3986_encode(str(value)) + "\"" for (key, value) in oauth_base_parameters_dict.items()])
-        return oauth_key
 
 
     def get_base_string(url, method, query_params, oauth_parameters):
@@ -97,6 +108,11 @@ class OAuth():
         return "".join([characters[randint(0,charlen-1)] for i in range(0,length)])
 
 
+    def get_query_params(uri):
+        return dict(parse.parse_qsl(parse.urlsplit(uri).query))
+
+
+
 class OAuthParameters(object):
     """
     Stores the OAuth parameters required to generate the Base String and Headers constants
@@ -117,27 +133,48 @@ class OAuthParameters(object):
 
     def put(self, key, value):
         self.base_parameters[key] = value
+    def get(self, key):
+        return self.base_parameters[key]
 
     def set_oauth_consumer_key(self, consumer_key):
         self.put(OAuthParameters.OAUTH_CONSUMER_KEY, consumer_key)
+    def get_oauth_consumer_key(self):
+        return self.get(OAuthParameters.OAUTH_CONSUMER_KEY)
 
     def set_oauth_nonce(self, oauth_nonce):
         self.put(OAuthParameters.OAUTH_NONCE_KEY, oauth_nonce)
+    def get_oauth_nonce(self):
+        return self.get(OAuthParameters.OAUTH_NONCE_KEY)
 
     def set_oauth_timestamp(self, timestamp):
         self.put(OAuthParameters.OAUTH_TIMESTAMP_KEY, timestamp)
+    def get_oauth_timestamp(self):
+        return self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)
 
     def set_oauth_signature_method(self, signature_method):
         self.put(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY, signature_method)
+    def get_oauth_signature_method(self):
+        return self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)
 
     def set_oauth_signature(self, signature):
         self.put(OAuthParameters.OAUTH_SIGNATURE_KEY, signature)
+    def get_oauth_signature(self):
+        return self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)
 
     def set_oauth_body_hash(self, body_hash):
         self.put(OAuthParameters.OAUTH_BODY_HASH_KEY, body_hash)
+    def get_oauth_body_hash(self):
+        return self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)
 
     def set_oauth_version(self, version):
         self.put(OAuthParameters.OAUTH_VERSION, version)
+    def get_oauth_version(self):
+        self.get(OAuthParameters.OAUTH_VERSION)
 
     def get_base_parameters_dict(self):
         return self.base_parameters
+
+    def __str__(self):
+        output ='\nOAuth Version {self.get(OAuthParameters.OAUTH_VERSION)} \nOAuth BODY_HASH_KEY {self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)} \nOAuth OAUTH_CONSUMER_KEY {self.get(OAuthParameters.OAUTH_CONSUMER_KEY)} \nOAuth OAUTH_NONCE_KEY {self.get(OAuthParameters.OAUTH_NONCE_KEY)} \nOAuth OAUTH_KEY {self.get(OAuthParameters.OAUTH_KEY)} \nOAuth AUTHORIZATION {self.get(OAuthParameters.AUTHORIZATION)} \nOAuth OAUTH_SIGNATURE_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)} \nOAuth OAUTH_SIGNATURE_METHOD_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)} \nOAuth OAUTH_TIMESTAMP_KEY {self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)} \nblah'
+        output1 = 'test\n'
+        return f'\n OAuth Version {self.get(OAuthParameters.OAUTH_VERSION)} \n OAuth BODY_HASH_KEY {self.get(OAuthParameters.OAUTH_BODY_HASH_KEY)} \n OAuth OAUTH_CONSUMER_KEY {self.get(OAuthParameters.OAUTH_CONSUMER_KEY)} \n OAuth OAUTH_NONCE_KEY {self.get(OAuthParameters.OAUTH_NONCE_KEY)} \n OAuth OAUTH_SIGNATURE_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_KEY)} \n OAuth OAUTH_SIGNATURE_METHOD_KEY {self.get(OAuthParameters.OAUTH_SIGNATURE_METHOD_KEY)} \n OAuth OAUTH_TIMESTAMP_KEY {self.get(OAuthParameters.OAUTH_TIMESTAMP_KEY)}'
