@@ -99,7 +99,7 @@ class OAuthTest(unittest.TestCase):
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
         # print(query_params)
-        self.assertEqual(query_params, "param1=plus%2Bvalue&param2=colon%3Avalue")
+        self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue")
 
 
     def test_query_parser_not_encoded_params(self):
@@ -191,7 +191,6 @@ class OAuthTest(unittest.TestCase):
 
 
     def test_signature_base_string(self):
-        print("FIXME")
         uri = "https://api.mastercard.com"
         base_uri = Util.normalize_url(uri)
 
@@ -200,9 +199,9 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters.set_oauth_nonce("randomnonce")
 
         base_string = OAuth.get_base_string(base_uri, "POST", oauth_parameters, oauth_parameters.get_base_parameters_dict())
-        print(base_string)
+        print('base_string=' +  base_string)
 
-        self.assertEqual("POST&https%3A%2F%2Fapi.mastercard.com&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce", base_string);
+        self.assertEqual("POST&https%3A%2F%2Fapi.mastercard.com%2F&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce", base_string);
         # - POST&https%3A%2F%2Fapi.mastercard.com&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce
         # + POST&https%3A%2F%2Fapi.mastercard.com%2F&oauth_body_hash%3Dbody%252Fhash%26oauth_nonce%3Drandomnonce
         

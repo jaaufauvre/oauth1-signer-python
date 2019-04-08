@@ -82,8 +82,8 @@ def normalize_params(url, params):
 
 
 def encodePair(key, value):
-    encodedKey = uri_rfc3986_encode(key)
-    encodedValue = uri_rfc3986_encode(value if isinstance(value, bytes) else str(value))
+    encodedKey = oauth_query_string_element_encode(key)
+    encodedValue = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
     return "%s=%s" % (encodedKey, encodedValue)
 
 def normalize_url(url):
@@ -109,7 +109,7 @@ def normalize_url(url):
     return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
 
-def uri_rfc3986_encode(value):
+def oauth_query_string_element_encode(value):
     """
     RFC 3986 encodes the value
 
@@ -121,9 +121,18 @@ def uri_rfc3986_encode(value):
     encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
     if _verbose:
-        print('uri_rfc3986_encode: %s -> %s' % (value, encoded))
+        print('oauth_query_string_element_encode: %s -> %s' % (value, encoded))
     return encoded
 
+def uri_rfc3986_encode(value):
+    """
+    RFC 3986 encodes the value
+    """
+    encoded = quote_plus(value)
+    encoded = str.replace(encoded, '+', '%20')
+    encoded = str.replace(encoded, '*', '%2A')
+    encoded = str.replace(encoded, '~', '%7E')
+    return encoded
 
 def sha256_encode(text):
     """
