@@ -62,21 +62,22 @@ def normalize_params(url, params):
     parse = urlparse(url)
 
     # Get the query list
-    qs_dict = parse_qsl(parse.query)
-    # convert the list to dict
-    qs_dict = dict(qs_dict)
-    # Combine the two dictionaries
+    qs_list = parse_qsl(parse.query, keep_blank_values=True)
     if params is None:
-        combined_dict = qs_dict
+        combined_list = qs_list
     else:
-        combined_dict = qs_dict.copy()
-        combined_dict.update(params)
+        combined_list = list(qs_list)
+        combined_list += params.items()
+
+    sorted_list = sorted(combined_list, key=lambda x:x[0])
+    
     # ,quote(value if isinstance(value,bytes) else str(value))
     #  -- This part means that for bytes we pass as it is else we convert to string
-    return "&".join(['%s=%s' % (uri_rfc3986_encode(key), uri_rfc3986_encode(value if isinstance(value, bytes)
-                                                                            else str(value)))
-                     for (key, value) in sorted(combined_dict.items())])
-
+    encoded_list = ['%s=%s' % (
+        uri_rfc3986_encode(key), 
+        uri_rfc3986_encode(value if isinstance(value, bytes) else str(value)))
+            for (key, value) in sorted_list ]
+    return "&".join(encoded_list)
 
 def normalize_url(url):
     """

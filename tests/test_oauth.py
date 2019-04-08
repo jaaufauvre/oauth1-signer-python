@@ -77,7 +77,6 @@ class OAuthTest(unittest.TestCase):
         
 
     def test_query_parser(self):
-        print("FIXME")
         uri = "https://sandbox.api.mastercard.com/audiences/v1/getcountries?offset=0&offset=1&length=10&empty&odd="
 
         oauth_parameters = OAuthParameters()
@@ -85,7 +84,7 @@ class OAuthTest(unittest.TestCase):
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
         # print(query_params)
-        self.assertEqual(query_params, "empty&length=10&odd=&offset=0&offset=1")
+        self.assertEqual(query_params, "empty=&length=10&odd=&offset=0&offset=1")
         # - length=10&offset=1
         # + empty&length=10&odd=&offset=0&offset=1
         
