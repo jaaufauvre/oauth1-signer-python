@@ -103,7 +103,6 @@ class OAuthTest(unittest.TestCase):
 
 
     def test_query_parser_not_encoded_params(self):
-        print("FIXME")
         uri = "https://api.mastercard.com/audiences?param1=plus+value&param2=colon:value&param3=a space~"
 
         oauth_parameters = OAuthParameters()
@@ -111,7 +110,7 @@ class OAuthTest(unittest.TestCase):
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
         print(query_params)
-        self.assertEqual(query_params, "param1=plus%2Bvalue&param2=colon%3Avalue&param3=a%20space~")
+        self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue&param3=a%20space~")
         # - param1=plus%2Bvalue&param2=colon%3Avalue&param3=a%2Bspace~
         # + param1=plus%2Bvalue&param2=colon%3Avalue&param3=a%20space~
 
@@ -158,7 +157,6 @@ class OAuthTest(unittest.TestCase):
 
 
     def test_params_string_rfc_example_2(self):
-        print("FIXME")
         uri = "https://sandbox.api.mastercard.com?b5=%3D%253D&a3=a&a3=2%20q&c%40=&a2=r%20b&c2="
 
         oauth_parameters2 = OAuthParameters()

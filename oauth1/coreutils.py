@@ -35,6 +35,7 @@ import base64
 
 from urllib.parse import urlparse, quote, quote_plus, parse_qsl
 
+_verbose = False
 
 def validate_url(url):
     """
@@ -69,15 +70,21 @@ def normalize_params(url, params):
         combined_list = list(qs_list)
         combined_list += params.items()
 
-    sorted_list = sorted(combined_list, key=lambda x:x[0])
+    # Needs to be encoded before sorting
+    encoded_list = [encodePair(key, value) for (key, value) in combined_list]
+    if _verbose:
+        print('encoded_list:')
+        for p in encoded_list:
+            print(p)
+    sorted_list = sorted(encoded_list, key=lambda x:x)
     
-    # ,quote(value if isinstance(value,bytes) else str(value))
-    #  -- This part means that for bytes we pass as it is else we convert to string
-    encoded_list = ['%s=%s' % (
-        uri_rfc3986_encode(key), 
-        uri_rfc3986_encode(value if isinstance(value, bytes) else str(value)))
-            for (key, value) in sorted_list ]
-    return "&".join(encoded_list)
+    return "&".join(sorted_list)
+
+
+def encodePair(key, value):
+    encodedKey = uri_rfc3986_encode(key)
+    encodedValue = uri_rfc3986_encode(value if isinstance(value, bytes) else str(value))
+    return "%s=%s" % (encodedKey, encodedValue)
 
 def normalize_url(url):
     """
@@ -105,13 +112,16 @@ def normalize_url(url):
 def uri_rfc3986_encode(value):
     """
     RFC 3986 encodes the value
+
+    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
+    it replaces space with %20 not "+".
     """
-    encoded = quote_plus(value)
-    # encoded = str.replace(encoded, ' ', '%20')
+    encoded = quote(value)
     encoded = str.replace(encoded, ':', '%3A')
     encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
-    # encoded = str.replace(encoded, '~', '%7E')
+    if _verbose:
+        print('uri_rfc3986_encode: %s -> %s' % (value, encoded))
     return encoded
 
 
