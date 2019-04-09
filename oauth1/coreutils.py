@@ -77,7 +77,7 @@ def normalize_params(url, params):
         for p in encoded_list:
             print(p)
     sorted_list = sorted(encoded_list, key=lambda x:x)
-    
+
     return "&".join(sorted_list)
 
 
@@ -85,6 +85,21 @@ def encodePair(key, value):
     encodedKey = oauth_query_string_element_encode(key)
     encodedValue = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
     return "%s=%s" % (encodedKey, encodedValue)
+
+def oauth_query_string_element_encode(value):
+    """
+    RFC 3986 encodes the value
+
+    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
+    it replaces space with %20 not "+".
+    """
+    encoded = quote(value)
+    encoded = str.replace(encoded, ':', '%3A')
+    encoded = str.replace(encoded, '+', '%2B')
+    encoded = str.replace(encoded, '*', '%2A')
+    if _verbose:
+        print('oauth_query_string_element_encode: %s -> %s' % (value, encoded))
+    return encoded
 
 def normalize_url(url):
     """
@@ -108,21 +123,6 @@ def normalize_url(url):
 
     return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
-
-def oauth_query_string_element_encode(value):
-    """
-    RFC 3986 encodes the value
-
-    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
-    it replaces space with %20 not "+".
-    """
-    encoded = quote(value)
-    encoded = str.replace(encoded, ':', '%3A')
-    encoded = str.replace(encoded, '+', '%2B')
-    encoded = str.replace(encoded, '*', '%2A')
-    if _verbose:
-        print('oauth_query_string_element_encode: %s -> %s' % (value, encoded))
-    return encoded
 
 def uri_rfc3986_encode(value):
     """
