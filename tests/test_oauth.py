@@ -109,7 +109,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
         query_params = Util.normalize_params(uri, merge_parameters)
-        print(query_params)
         self.assertEqual(query_params, "param1=plus%20value&param2=colon%3Avalue&param3=a%20space~")
         # - param1=plus%2Bvalue&param2=colon%3Avalue&param3=a%2Bspace~
         # + param1=plus%2Bvalue&param2=colon%3Avalue&param3=a%20space~
@@ -172,16 +171,12 @@ class OAuthTest(unittest.TestCase):
 
 
     def test_params_string_ascending_byte_value_ordering(self):
-        print("FIXME")
         url = "https://localhost?b=b&A=a&A=A&B=B&a=A&a=a&0=0"
 
         oauth_parameters = OAuthParameters()
         oauth_parameters_base = oauth_parameters.get_base_parameters_dict()
         merge_parameters = oauth_parameters_base.copy()
         norm_params = Util.normalize_params(url, merge_parameters)
-        print("bbbbXXXXXXXXXXXXX")
-        print(norm_params)
-        print("bbbbXXXXXXXXXXXXX")
 
         self.assertEqual("0=0&A=A&A=a&B=B&a=A&a=a&b=b", norm_params)
         # - 0=0&A=A&A=a&B=B&a=A&a=a&b=b
@@ -199,7 +194,6 @@ class OAuthTest(unittest.TestCase):
         oauth_parameters.set_oauth_nonce("randomnonce")
 
         base_string = OAuth.get_base_string(base_uri, "POST", oauth_parameters, oauth_parameters.get_base_parameters_dict())
-        print('base_string=' +  base_string)
 
         self.assertEqual("POST&https%3A%2F%2Fapi.mastercard.com%2F&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce", base_string);
         # - POST&https%3A%2F%2Fapi.mastercard.com&oauth_body_hash%3Dbody%2Fhash%26oauth_nonce%3Drandomnonce
@@ -208,7 +202,6 @@ class OAuthTest(unittest.TestCase):
 
         
     def test_signature_base_string2(self):
-        print("FIXME")
         body = "<?xml version=\"1.0\" encoding=\"Windows-1252\"?><ns2:TerminationInquiryRequest xmlns:ns2=\"http://mastercard.com/termination\"><AcquirerId>1996</AcquirerId><TransactionReferenceNumber>1</TransactionReferenceNumber><Merchant><Name>TEST</Name><DoingBusinessAsName>TEST</DoingBusinessAsName><PhoneNumber>5555555555</PhoneNumber><NationalTaxId>1234567890</NationalTaxId><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><Principal><FirstName>John</FirstName><LastName>Smith</LastName><NationalId>1234567890</NationalId><PhoneNumber>5555555555</PhoneNumber><Address><Line1>5555 Test Lane</Line1><City>TEST</City><CountrySubdivision>XX</CountrySubdivision><PostalCode>12345</PostalCode><Country>USA</Country></Address><DriversLicense><Number>1234567890</Number><CountrySubdivision>XX</CountrySubdivision></DriversLicense></Principal></Merchant></ns2:TerminationInquiryRequest>";
         url = "https://sandbox.api.mastercard.com/fraud/merchant/v1/termination-inquiry?Format=XML&PageOffset=0&PageLength=10"
         method = "POST"
@@ -227,21 +220,16 @@ class OAuthTest(unittest.TestCase):
 
 
         norm_params = Util.normalize_params("", merge_parameters)
-        print("XXXXXXXXXXXXX")
         # print(oauth_parameters_base)
-        print(norm_params)
 
         query_params = OAuth.get_query_params(url)
         
-        print("YYYYYXXXXXXXXXXXXX")
         # print(query_params)
         normalize_params = Util.normalize_params("", query_params)
-        print(normalize_params)
 
         base_string = OAuth.get_base_string(url, method, oauth_parameters, oauth_parameters.get_base_parameters_dict())
-        print(base_string)
 
-        expected = "POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3Dh2Pd7zlzEZjZVIKB4j94UZn%2FxxoR3RoCjYQ9%2FJdadGQ%3D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0"
+        expected = "POST&https%3A%2F%2Fsandbox.api.mastercard.com%2Ffraud%2Fmerchant%2Fv1%2Ftermination-inquiry&Format%3DXML%26PageLength%3D10%26PageOffset%3D0%26oauth_body_hash%3Dh2Pd7zlzEZjZVIKB4j94UZn%2FxxoR3RoCjYQ9%2FJdadGQ%253D%26oauth_consumer_key%3Dxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx%26oauth_nonce%3D1111111111111111111%26oauth_timestamp%3D1111111111%26oauth_version%3D1.0"
 
         self.maxDiff = None
         self.assertEqual(expected, base_string);
