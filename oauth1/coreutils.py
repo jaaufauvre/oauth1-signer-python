@@ -35,6 +35,7 @@ import base64
 
 from urllib.parse import urlparse, quote, quote_plus, parse_qsl
 
+_verbose = False
 
 def validate_url(url):
     """
@@ -62,28 +63,65 @@ def normalize_params(url, params):
     parse = urlparse(url)
 
     # Get the query list
-    qs_dict = parse_qsl(parse.query)
-    # convert the list to dict
-    qs_dict = dict(qs_dict)
-    # Combine the two dictionaries
+    qs_list = parse_qsl(parse.query, keep_blank_values=True)
     if params is None:
-        combined_dict = qs_dict
+        combined_list = qs_list
     else:
-        combined_dict = qs_dict.copy()
-        combined_dict.update(params)
-    # ,quote(value if isinstance(value,bytes) else str(value))
-    #  -- This part means that for bytes we pass as it is else we convert to string
-    return "&".join(['%s=%s' % (uri_rfc3986_encode(key), uri_rfc3986_encode(value if isinstance(value, bytes)
-                                                                            else str(value)))
-                     for (key, value) in sorted(combined_dict.items())])
+        combined_list = list(qs_list)
+        combined_list += params.items()
 
+    # Needs to be encoded before sorting
+    encoded_list = [encodePair(key, value) for (key, value) in combined_list]
+    if _verbose:
+        print('encoded_list:')
+        for p in encoded_list:
+            print(p)
+    sorted_list = sorted(encoded_list, key=lambda x:x)
+
+    return "&".join(sorted_list)
+
+
+def encodePair(key, value):
+    encodedKey = oauth_query_string_element_encode(key)
+    encodedValue = oauth_query_string_element_encode(value if isinstance(value, bytes) else str(value))
+    return "%s=%s" % (encodedKey, encodedValue)
+
+def oauth_query_string_element_encode(value):
+    """
+    RFC 3986 encodes the value
+
+    Note. This is based on RFC3986 but according to https://tools.ietf.org/html/rfc5849#section-3.6
+    it replaces space with %20 not "+".
+    """
+    encoded = quote(value)
+    encoded = str.replace(encoded, ':', '%3A')
+    encoded = str.replace(encoded, '+', '%2B')
+    encoded = str.replace(encoded, '*', '%2A')
+    if _verbose:
+        print('oauth_query_string_element_encode: %s -> %s' % (value, encoded))
+    return encoded
 
 def normalize_url(url):
     """
     Removes the query parameters from the URL
     """
     parse = urlparse(url)
-    return "{}://{}{}".format(parse.scheme, parse.netloc, parse.path)
+
+    # netloc should be lowercase
+    netloc = parse.netloc.lower()
+    if parse.scheme=="http":
+        if netloc.endswith(":80"):
+            netloc = netloc[:-3]
+
+    elif parse.scheme=="https":
+        if netloc.endswith(":443"):
+            netloc = netloc[:-4]
+
+    # add a '/' at the end of the netloc if there in no path
+    if not parse.path:
+        netloc = netloc+"/"
+
+    return "{}://{}{}".format(parse.scheme, netloc, parse.path)
 
 
 def uri_rfc3986_encode(value):
@@ -91,9 +129,11 @@ def uri_rfc3986_encode(value):
     RFC 3986 encodes the value
     """
     encoded = quote_plus(value)
-    encoded = str.replace(encoded, '+', '%20')
+    # encoded = str.replace(encoded, ' ', '%20')
+    encoded = str.replace(encoded, ':', '%3A')
+    encoded = str.replace(encoded, '+', '%2B')
     encoded = str.replace(encoded, '*', '%2A')
-    encoded = str.replace(encoded, '~', '%7E')
+    # encoded = str.replace(encoded, '~', '%7E')
     return encoded
 
 
