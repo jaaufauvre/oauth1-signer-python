@@ -40,7 +40,7 @@ As part of this set up, you'll receive credentials for your app:
 #### PIP
 `pip3 install git+https://github.com/Mastercard/oauth1-signer-python.git`
 
-####or Clone 
+#### or Clone 
 `git clone https://github.com/Mastercard/oauth1-signer-python.git`
 
 Change to the repo folder, and enter :
