@@ -12,7 +12,8 @@
   * [Sample Code](#sample-code)
     * [Breakdown of the Sample](#sample-breakdown)
       * [Loading the Signing Key](#loading-the-signing-key)
-      * [Creating the OAuth Authorization](#creating-the-oauth-authorization-header)
+      * [Creating the OAuth Authorization for a GET](#creating-the-oauth-get)
+      * [Creating the OAuth Authorization for a POST](#creating-the-oauth-post)
 
 
 
@@ -63,7 +64,7 @@ import json
 from urllib.parse import urlencode
 ```
 
-##### Get a signing key from the .p12 file (replace place-holder strings with values from your project in developer zone).
+##### Get a signing key from the .p12 file (replace place-holder strings with values from your project in developer zone). <a name="loading-the-signing-key"></a>
 ``` python
 signing_key = authenticationutils.load_signing_key('your-keyFile.p12', 'the-keystore-password')
 consumer_key = 'your-consumer-key-from-devzone'
@@ -72,7 +73,7 @@ baseUrl = 'https://sandbox.api.mastercard.com' # remove 'sandbox.' if calling pr
 ```
 
 
-##### ​To send a GET with query parameters:
+##### To send a GET with query parameters:  <a name="creating-the-oauth-get"></a>
 
 ``` python
 queryMap = {
@@ -93,7 +94,7 @@ print(r.text)
 ```
 
 
-##### To send a POST to :
+##### To send a POST to : <a name="creating-the-oauth-post"></a>
 
 ``` python
 uri = baseUrl + "/eop/offer/v1/search?Format=XML" # change this to toggle between and XML or JSON response
